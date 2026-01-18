@@ -3684,9 +3684,13 @@ async function startEKGCamera() {
         const cameraContainer = document.getElementById('cameraContainer');
         const startBtn = document.getElementById('startCameraBtn');
         
-        // Kamera erişimi iste - Basit ayarlarla (masaüstü uyumlu)
+        // Kamera erişimi iste - Mobilde arka kamera için
         const stream = await navigator.mediaDevices.getUserMedia({
-            video: true  // Basit ayar - tüm kameralarla uyumlu
+            video: { 
+                facingMode: { ideal: 'environment' }, // Arka kamera tercih et
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
         });
         
         video.srcObject = stream;
@@ -3721,7 +3725,7 @@ async function startEKGCamera() {
             try {
                 console.log('Basit kamera ayarlarıyla deneniyor...');
                 const simpleStream = await navigator.mediaDevices.getUserMedia({
-                    video: true
+                    video: { facingMode: 'environment' } // Arka kamera
                 });
                 
                 const video = document.getElementById('ekgVideo');
@@ -6803,7 +6807,21 @@ async function sendToEKGBackend(base64Image) {
 // Profesyonel EKG sonuçlarını göster
 function displayProfessionalEKGResults(result) {
     const analysisDiv = document.getElementById('ekgAnalysisResult');
-    const rhythm = result.rhythm;
+    
+    // Sonuç kontrolü
+    if (!result || !result.rhythm) {
+        console.error('Geçersiz analiz sonucu:', result);
+        analysisDiv.innerHTML = `
+            <div style="border: 2px solid #ef4444; border-radius: 12px; padding: 20px; background: white;">
+                <h4 style="color: #ef4444;">❌ Analiz Hatası</h4>
+                <p>Analiz sonucu alınamadı. Lütfen tekrar deneyin.</p>
+                <button onclick="captureEKGImage()" style="background: #6366f1; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">
+                    🔄 Tekrar Dene
+                </button>
+            </div>
+        `;
+        return;
+    }
     
     // Aciliyet rengini belirle
     const urgencyColors = {
@@ -6814,7 +6832,7 @@ function displayProfessionalEKGResults(result) {
         error: "#6b7280"
     };
     
-    const color = urgencyColors[rhythm.urgency] || "#6b7280";
+    const color = urgencyColors[result.urgency] || "#6b7280";
     
     // Öğrenme sistemi bilgilerini al
     const learningStats = mobileEKGLearning.getLearningStats();
@@ -6824,7 +6842,7 @@ function displayProfessionalEKGResults(result) {
         <div style="border: 2px solid ${color}; border-radius: 12px; padding: 20px; background: white;">
             <div style="display: flex; align-items: center; margin-bottom: 15px;">
                 <div style="width: 12px; height: 12px; background: ${color}; border-radius: 50%; margin-right: 10px;"></div>
-                <h4 style="margin: 0; color: ${color}; font-size: 18px;">${rhythm.name}</h4>
+                <h4 style="margin: 0; color: ${color}; font-size: 18px;">${result.rhythm || 'Bilinmeyen Ritim'}</h4>
                 ${result.confidence ? `<span style="margin-left: auto; background: #f0fdf4; color: #059669; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold;">${Math.round(result.confidence)}% güven</span>` : ''}
             </div>
             
@@ -7039,45 +7057,48 @@ function displayEKGError(error, suggestion) {
 function generateOfflineDemoResult() {
     const demoRhythms = [
         {
-            rhythm: {
-                name: "Atriyal Fibrilasyon",
-                urgency: "warning",
-                description: "Düzensiz R-R intervalleri, P dalgası görülmüyor. Tipik AF paterni.",
-                treatment: "Antikoagülasyon değerlendirmesi, rate kontrolü (beta-bloker/diltiazem)"
-            },
-            heart_rate: {
-                average: 87.3,
-                min: 72.1,
-                max: 105.8,
-                variability: 18.7
-            },
-            signal_quality: "İyi",
-            r_peaks_count: 12,
+            rhythm: "Atriyal Fibrilasyon",
+            urgency: "warning",
+            description: "Düzensiz R-R intervalleri, P dalgası görülmüyor. Tipik AF paterni.",
+            treatment: "Antikoagülasyon değerlendirmesi, rate kontrolü (beta-bloker/diltiazem)",
+            heart_rate: 87,
             confidence: 89,
-            hrv_metrics: {
-                rmssd: 45.2,
-                sdnn: 52.8
+            details: {
+                signal_quality: "İyi",
+                r_peaks_count: 12,
+                rr_variability: 18.7,
+                qrs_width: 95,
+                p_waves: "Yok"
             }
         },
         {
-            rhythm: {
-                name: "Normal Sinüs Ritmi",
-                urgency: "normal",
-                description: "Düzenli P-QRS-T kompleksleri, normal kalp hızı",
-                treatment: "Tedavi gerekmez, normal ritim"
-            },
-            heart_rate: {
-                average: 72.5,
-                min: 68.2,
-                max: 76.8,
-                variability: 4.2
-            },
-            signal_quality: "Mükemmel",
-            r_peaks_count: 15,
+            rhythm: "Normal Sinüs Ritmi",
+            urgency: "normal", 
+            description: "Düzenli P-QRS-T kompleksleri, normal kalp hızı",
+            treatment: "Tedavi gerekmez, normal ritim",
+            heart_rate: 72,
             confidence: 94,
-            hrv_metrics: {
-                rmssd: 28.5,
-                sdnn: 35.2
+            details: {
+                signal_quality: "Mükemmel",
+                r_peaks_count: 15,
+                rr_variability: 4.2,
+                qrs_width: 85,
+                p_waves: "Normal"
+            }
+        },
+        {
+            rhythm: "Supraventriküler Taşikardi",
+            urgency: "caution",
+            description: "Hızlı, düzenli ritim. P dalgaları net görülmüyor.",
+            treatment: "Vagal manevralar, adenozin, kardiyoloji konsültasyonu",
+            heart_rate: 165,
+            confidence: 82,
+            details: {
+                signal_quality: "İyi",
+                r_peaks_count: 18,
+                rr_variability: 2.1,
+                qrs_width: 88,
+                p_waves: "Belirsiz"
             }
         }
     ];
