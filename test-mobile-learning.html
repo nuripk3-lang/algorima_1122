@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobil EKG Öğrenme Sistemi Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; }
+        button { background: #3b82f6; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; margin: 5px; }
+        button:hover { background: #2563eb; }
+        .success { background: #dcfce7; border-color: #10b981; }
+        .info { background: #dbeafe; border-color: #3b82f6; }
+        .result { margin: 10px 0; padding: 10px; background: #f8fafc; border-radius: 6px; font-family: monospace; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Mobil EKG Öğrenme Sistemi Test</h1>
+        <p>Bu sayfa mobil öğrenme sisteminin çalışıp çalışmadığını test eder.</p>
+        
+        <div class="test-section">
+            <h3>📊 Sistem Durumu</h3>
+            <button onclick="testSystemStatus()">Sistem Durumunu Kontrol Et</button>
+            <div id="systemStatus" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 Öğrenme Testi</h3>
+            <button onclick="testLearning()">Örnek Öğrenme Verisi Ekle</button>
+            <button onclick="testPrediction()">Adaptif Tahmin Testi</button>
+            <div id="learningTest" class="result"></div>
+        </div>
+        
+        <div class="test-section success">
+            <h3>📈 İstatistikler</h3>
+            <button onclick="showStats()">Öğrenme İstatistiklerini Göster</button>
+            <div id="statsDisplay" class="result"></div>
+        </div>
+        
+        <div class="test-section info">
+            <h3>🔄 Sistem Yönetimi</h3>
+            <button onclick="resetSystem()">Sistemi Sıfırla</button>
+            <button onclick="exportData()">Verileri Dışa Aktar</button>
+            <div id="managementResult" class="result"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Test fonksiyonları
+        function testSystemStatus() {
+            const stats = mobileEKGLearning.getLearningStats();
+            document.getElementById('systemStatus').innerHTML = `
+                <strong>Sistem Durumu:</strong><br>
+                ✅ Mobil öğrenme sistemi aktif<br>
+                📊 Toplam düzeltme: ${stats.total_corrections}<br>
+                🎯 Benzersiz patern: ${stats.unique_patterns}<br>
+                📅 Son 7 gün: ${stats.recent_corrections}<br>
+                📈 Tahmini doğruluk artışı: +${stats.accuracy_improvement}%<br>
+                🔄 Öğrenme aktif: ${stats.learning_active ? 'Evet' : 'Hayır (5+ düzeltme gerekli)'}
+            `;
+        }
+        
+        function testLearning() {
+            // Örnek öğrenme verisi ekle
+            const sampleFeatures = {
+                heart_rate: 85,
+                rr_variability: 15,
+                qrs_width: 95,
+                signal_quality: "İyi"
+            };
+            
+            const result = mobileEKGLearning.learnFromUserCorrection(
+                "Normal Sinüs Ritmi", 
+                "Sinüs Taşikardisi", 
+                sampleFeatures
+            );
+            
+            document.getElementById('learningTest').innerHTML = `
+                <strong>Öğrenme Testi Sonucu:</strong><br>
+                ${result}<br><br>
+                <strong>Eklenen Veri:</strong><br>
+                Orijinal: Normal Sinüs Ritmi<br>
+                Düzeltme: Sinüs Taşikardisi<br>
+                Kalp Hızı: ${sampleFeatures.heart_rate} bpm<br>
+                Variabilite: ${sampleFeatures.rr_variability}%
+            `;
+        }
+        
+        function testPrediction() {
+            // Adaptif tahmin testi
+            const mockResult = {
+                rhythm: "Normal Sinüs Ritmi",
+                confidence: 70,
+                description: "Test tahmini"
+            };
+            
+            const mockFeatures = {
+                heart_rate: 85,
+                rr_variability: 15,
+                qrs_width: 95,
+                signal_quality: "İyi"
+            };
+            
+            const adaptedResult = mobileEKGLearning.adaptivePrediction(mockResult, mockFeatures);
+            
+            document.getElementById('learningTest').innerHTML += `
+                <br><br><strong>Adaptif Tahmin Testi:</strong><br>
+                Öğrenme uygulandı: ${adaptedResult.learning_applied ? 'Evet' : 'Hayır'}<br>
+                Benzer vaka sayısı: ${adaptedResult.similar_cases_found || 0}<br>
+                Güven değişimi: ${adaptedResult.confidence_adjustment || 0}<br>
+                Yeni güven skoru: ${adaptedResult.confidence}%
+            `;
+        }
+        
+        function showStats() {
+            const stats = mobileEKGLearning.getLearningStats();
+            document.getElementById('statsDisplay').innerHTML = `
+                <strong>Detaylı İstatistikler:</strong><br>
+                📊 Toplam Düzeltme: ${stats.total_corrections}<br>
+                🎯 Benzersiz Paternler: ${stats.unique_patterns}<br>
+                📅 Son 7 Gün: ${stats.recent_corrections}<br>
+                📈 Doğruluk Artışı: +${stats.accuracy_improvement}%<br>
+                🔄 Öğrenme Durumu: ${stats.learning_active ? 'Aktif' : 'Pasif'}<br><br>
+                <strong>Kayıtlı Düzeltmeler:</strong><br>
+                ${mobileEKGLearning.userCorrections.length > 0 ? 
+                    mobileEKGLearning.userCorrections.slice(-3).map(c => 
+                        `• ${c.original} → ${c.corrected} (${new Date(c.timestamp).toLocaleString()})`
+                    ).join('<br>') : 
+                    'Henüz düzeltme kaydı yok'
+                }
+            `;
+        }
+        
+        function resetSystem() {
+            if (confirm('Tüm öğrenme verileri silinecek. Emin misiniz?')) {
+                const result = mobileEKGLearning.resetLearning();
+                document.getElementById('managementResult').innerHTML = `
+                    <strong>Sıfırlama Sonucu:</strong><br>
+                    ${result}
+                `;
+            }
+        }
+        
+        function exportData() {
+            const stats = mobileEKGLearning.getLearningStats();
+            const corrections = mobileEKGLearning.userCorrections;
+            
+            const exportData = {
+                export_date: new Date().toISOString(),
+                statistics: stats,
+                corrections: corrections,
+                version: "1.0"
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = `ekg-learning-test-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            document.getElementById('managementResult').innerHTML = `
+                <strong>Dışa Aktarma:</strong><br>
+                ✅ Veriler başarıyla dışa aktarıldı<br>
+                📁 Dosya: ekg-learning-test-${new Date().toISOString().split('T')[0]}.json
+            `;
+        }
+        
+        // Sayfa yüklendiğinde sistem durumunu göster
+        window.onload = function() {
+            testSystemStatus();
+        };
+    </script>
+</body>
+</html>
