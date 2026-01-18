@@ -1,0 +1,23 @@
+<svg width="48" height="48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="48" height="48" fill="#ffffff" rx="4.8"/>
+  
+  <!-- Emergency Cross Symbol -->
+  <g transform="translate(12, 12)">
+    <!-- Vertical bar -->
+    <rect x="9.6" y="0" width="4.8" height="24" fill="#b91c1c"/>
+    <!-- Horizontal bar -->
+    <rect x="0" y="9.6" width="24" height="4.8" fill="#b91c1c"/>
+  </g>
+  
+  <!-- Text: 112 -->
+  <text x="24" y="40" 
+        font-family="Arial, sans-serif" 
+        font-weight="bold" 
+        font-size="10" 
+        fill="#b91c1c" 
+        text-anchor="middle" 
+        dominant-baseline="middle">
+    112
+  </text>
+</svg>

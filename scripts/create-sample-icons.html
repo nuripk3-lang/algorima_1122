@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Sample Icons</title>
+</head>
+<body>
+    <h1>Creating Sample Icons...</h1>
+    <div id="output"></div>
+    
+    <script>
+        // Create a few sample icons to test the system
+        function createIcon(size, text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Brand colors
+            const brandColor = '#b91c1c';
+            const backgroundColor = '#ffffff';
+
+            // Fill background
+            ctx.fillStyle = backgroundColor;
+            ctx.fillRect(0, 0, size, size);
+
+            // Draw emergency cross
+            const crossSize = size * 0.35;
+            const crossX = (size - crossSize) / 2;
+            const crossY = (size - crossSize) / 2;
+            
+            ctx.fillStyle = brandColor;
+            
+            // Vertical bar
+            ctx.fillRect(
+                crossX + crossSize * 0.4, 
+                crossY, 
+                crossSize * 0.2, 
+                crossSize
+            );
+            
+            // Horizontal bar
+            ctx.fillRect(
+                crossX, 
+                crossY + crossSize * 0.4, 
+                crossSize, 
+                crossSize * 0.2
+            );
+
+            // Add text
+            const fontSize = size >= 192 ? size * 0.12 : size * 0.22;
+            const textY = size * 0.8;
+            
+            ctx.fillStyle = brandColor;
+            ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            ctx.fillText(text, size / 2, textY);
+
+            return canvas;
+        }
+
+        // Create sample icons
+        const sampleIcons = [
+            { size: 192, text: 'KIRKLARELİ 112', filename: 'icon-192x192.png' },
+            { size: 512, text: 'KIRKLARELİ 112', filename: 'icon-512x512.png' },
+            { size: 96, text: '112', filename: 'icon-96x96.png' },
+            { size: 48, text: '112', filename: 'favicon-48x48.png' },
+            { size: 32, text: '112', filename: 'favicon-32x32.png' },
+            { size: 16, text: '112', filename: 'favicon-16x16.png' },
+            { size: 180, text: '112', filename: 'apple-touch-icon-180x180.png' },
+            { size: 152, text: '112', filename: 'apple-touch-icon-152x152.png' }
+        ];
+
+        const output = document.getElementById('output');
+        
+        sampleIcons.forEach(iconSpec => {
+            const canvas = createIcon(iconSpec.size, iconSpec.text);
+            const dataUrl = canvas.toDataURL('image/png');
+            
+            const div = document.createElement('div');
+            div.style.margin = '10px';
+            div.style.padding = '10px';
+            div.style.border = '1px solid #ccc';
+            
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.style.border = '1px solid #ddd';
+            img.style.marginRight = '10px';
+            
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = iconSpec.filename;
+            link.textContent = `Download ${iconSpec.filename}`;
+            link.style.color = '#b91c1c';
+            link.style.textDecoration = 'none';
+            link.style.fontWeight = 'bold';
+            
+            div.appendChild(img);
+            div.appendChild(link);
+            output.appendChild(div);
+        });
+        
+        console.log('Sample icons created! Click the download links to save them.');
+    </script>
+</body>
+</html>

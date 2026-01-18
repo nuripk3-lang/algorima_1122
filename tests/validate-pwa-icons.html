@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Icon System Validation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #b91c1c;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        .test-section h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        .test-result {
+            margin: 5px 0;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .summary {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .summary.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        .summary.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        button {
+            background: #b91c1c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px auto;
+            display: block;
+        }
+        button:hover {
+            background: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 PWA Icon System Validation</h1>
+        <p style="text-align: center;">Bu tool PWA icon sisteminin doğru çalıştığını test eder.</p>
+        
+        <button onclick="runValidation()">🚀 Validation Başlat</button>
+        
+        <div id="results"></div>
+    </div>
+
+    <script>
+        let passed = 0;
+        let failed = 0;
+        
+        function addTestResult(sectionId, testName, success, message = '') {
+            const section = document.getElementById(sectionId);
+            const result = document.createElement('div');
+            result.className = `test-result ${success ? 'test-pass' : 'test-fail'}`;
+            result.textContent = `${success ? '✅' : '❌'} ${testName}${message ? ': ' + message : ''}`;
+            section.appendChild(result);
+            
+            if (success) {
+                passed++;
+            } else {
+                failed++;
+            }
+        }
+        
+        function createTestSection(title, id) {
+            const section = document.createElement('div');
+            section.className = 'test-section';
+            section.innerHTML = `<h3>${title}</h3>`;
+            section.id = id;
+            return section;
+        }
+        
+        async function testFileExists(url) {
+            try {
+                const response = await fetch(url, { method: 'HEAD' });
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+        
+        async function runValidation() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+            passed = 0;
+            failed = 0;
+            
+            // Test 1: PWA Icon Files
+            const pwaSection = createTestSection('📱 PWA Icon Files', 'pwa-tests');
+            resultsDiv.appendChild(pwaSection);
+            
+            const pwaIcons = [
+                'img/icons/pwa/icon-72x72.jpg',
+                'img/icons/pwa/icon-96x96.jpg',
+                'img/icons/pwa/icon-128x128.jpg',
+                'img/icons/pwa/icon-144x144.jpg',
+                'img/icons/pwa/icon-152x152.jpg',
+                'img/icons/pwa/icon-192x192.jpg',
+                'img/icons/pwa/icon-384x384.jpg',
+                'img/icons/pwa/icon-512x512.jpg'
+            ];
+            
+            for (const iconPath of pwaIcons) {
+                const size = iconPath.match(/(\d+)x\d+/)[1];
+                const exists = await testFileExists(iconPath);
+                addTestResult('pwa-tests', `PWA icon ${size}x${size}`, exists);
+            }
+            
+            // Test 2: Apple Touch Icons
+            const appleSection = createTestSection('🍎 Apple Touch Icons', 'apple-tests');
+            resultsDiv.appendChild(appleSection);
+            
+            const appleIcons = [
+                'img/icons/apple-touch/apple-touch-icon-76x76.jpg',
+                'img/icons/apple-touch/apple-touch-icon-120x120.jpg',
+                'img/icons/apple-touch/apple-touch-icon-152x152.jpg',
+                'img/icons/apple-touch/apple-touch-icon-180x180.jpg'
+            ];
+            
+            for (const iconPath of appleIcons) {
+                const size = iconPath.match(/(\d+)x\d+/)[1];
+                const exists = await testFileExists(iconPath);
+                addTestResult('apple-tests', `Apple Touch icon ${size}x${size}`, exists);
+            }
+            
+            // Test 3: Favicons
+            const faviconSection = createTestSection('🌐 Favicons', 'favicon-tests');
+            resultsDiv.appendChild(faviconSection);
+            
+            const faviconIcons = [
+                'img/icons/favicon/favicon-16x16.jpg',
+                'img/icons/favicon/favicon-32x32.jpg',
+                'img/icons/favicon/favicon-48x48.jpg'
+            ];
+            
+            for (const iconPath of faviconIcons) {
+                const size = iconPath.match(/(\d+)x\d+/)[1];
+                const exists = await testFileExists(iconPath);
+                addTestResult('favicon-tests', `Favicon ${size}x${size}`, exists);
+            }
+            
+            // Test 4: Maskable Icons
+            const maskableSection = createTestSection('🤖 Maskable Icons', 'maskable-tests');
+            resultsDiv.appendChild(maskableSection);
+            
+            const maskableIcons = [
+                'img/icons/maskable/maskable-192x192.jpg',
+                'img/icons/maskable/maskable-512x512.jpg'
+            ];
+            
+            for (const iconPath of maskableIcons) {
+                const size = iconPath.match(/(\d+)x\d+/)[1];
+                const exists = await testFileExists(iconPath);
+                addTestResult('maskable-tests', `Maskable icon ${size}x${size}`, exists);
+            }
+            
+            // Test 5: Configuration Files
+            const configSection = createTestSection('⚙️ Configuration Files', 'config-tests');
+            resultsDiv.appendChild(configSection);
+            
+            const configFiles = [
+                'manifest.json',
+                'browserconfig.xml'
+            ];
+            
+            for (const filePath of configFiles) {
+                const exists = await testFileExists(filePath);
+                addTestResult('config-tests', `${filePath} exists`, exists);
+            }
+            
+            // Test 6: Manifest Content
+            const manifestSection = createTestSection('📋 Manifest Content', 'manifest-tests');
+            resultsDiv.appendChild(manifestSection);
+            
+            try {
+                const response = await fetch('manifest.json');
+                const manifest = await response.json();
+                
+                addTestResult('manifest-tests', 'Manifest has name', !!manifest.name);
+                addTestResult('manifest-tests', 'Manifest has icons array', Array.isArray(manifest.icons));
+                addTestResult('manifest-tests', 'Manifest has sufficient icons', manifest.icons.length >= 8);
+                addTestResult('manifest-tests', 'Manifest has maskable icons', 
+                    manifest.icons.some(icon => icon.purpose === 'maskable'));
+                addTestResult('manifest-tests', 'Manifest has correct theme color', 
+                    manifest.theme_color === '#b91c1c');
+                    
+            } catch (error) {
+                addTestResult('manifest-tests', 'Manifest JSON is valid', false, 'Could not parse manifest.json');
+            }
+            
+            // Summary
+            const summary = document.createElement('div');
+            summary.className = `summary ${failed === 0 ? 'success' : 'warning'}`;
+            
+            if (failed === 0) {
+                summary.innerHTML = `
+                    <h2>🎉 Tüm testler başarılı!</h2>
+                    <p>✅ Geçen: ${passed} | ❌ Başarısız: ${failed}</p>
+                    <p><strong>PWA icon sistemi hazır!</strong></p>
+                    <p>Artık mobil cihazınızda "Ana ekrana ekle" dediğinizde güzel Kırklareli 112 logosu gözükecek! 🚑</p>
+                `;
+            } else {
+                summary.innerHTML = `
+                    <h2>⚠️ Bazı testler başarısız</h2>
+                    <p>✅ Geçen: ${passed} | ❌ Başarısız: ${failed}</p>
+                    <p>Lütfen yukarıdaki hataları kontrol edin.</p>
+                `;
+            }
+            
+            resultsDiv.appendChild(summary);
+        }
+    </script>
+</body>
+</html>

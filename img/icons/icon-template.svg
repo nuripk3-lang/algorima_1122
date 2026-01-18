@@ -1,0 +1,23 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" fill="#ffffff" rx="51.2"/>
+  
+  <!-- Emergency Cross Symbol -->
+  <g transform="translate(128, 128)">
+    <!-- Vertical bar -->
+    <rect x="102.4" y="0" width="51.2" height="256" fill="#b91c1c"/>
+    <!-- Horizontal bar -->
+    <rect x="0" y="102.4" width="256" height="51.2" fill="#b91c1c"/>
+  </g>
+  
+  <!-- Text: KIRKLARELİ 112 -->
+  <text x="256" y="420" 
+        font-family="Arial, sans-serif" 
+        font-weight="bold" 
+        font-size="61" 
+        fill="#b91c1c" 
+        text-anchor="middle" 
+        dominant-baseline="middle">
+    KIRKLARELİ 112
+  </text>
+</svg>

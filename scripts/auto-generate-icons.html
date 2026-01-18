@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Generate Kırklareli 112 Icons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #b91c1c;
+            margin-bottom: 20px;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        .status.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .download-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        .download-category h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+        .download-link {
+            display: block;
+            margin: 5px 0;
+            padding: 5px 10px;
+            background: #b91c1c;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .download-link:hover {
+            background: #991b1b;
+        }
+        button {
+            background: #b91c1c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #991b1b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚑 Kırklareli 112 Icon Auto-Generator</h1>
+        <p>Bu tool otomatik olarak tüm PWA icon'larını oluşturur ve indirme linklerini sağlar.</p>
+        
+        <button onclick="autoGenerateIcons()">🎨 Otomatik Icon Oluştur</button>
+        
+        <div id="status"></div>
+        <div id="downloadSection" style="display: none;">
+            <h2>📥 İndirme Linkleri</h2>
+            <div id="downloadGrid" class="download-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Icon configurations
+        const iconSizes = {
+            pwa: [72, 96, 128, 144, 152, 192, 384, 512],
+            appleTouchIcon: [57, 60, 72, 76, 114, 120, 144, 152, 180],
+            favicon: [16, 32, 48],
+            maskable: [192, 512]
+        };
+
+        let generatedIcons = {};
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+        }
+
+        function getDesignVariant(size) {
+            if (size >= 192) {
+                return {
+                    includeFullText: true,
+                    includeLogo: true,
+                    textContent: "KIRKLARELİ 112"
+                };
+            } else if (size >= 96) {
+                return {
+                    includeFullText: false,
+                    includeLogo: true,
+                    textContent: "112"
+                };
+            } else if (size >= 32) {
+                return {
+                    includeFullText: false,
+                    includeLogo: false,
+                    textContent: "112"
+                };
+            } else {
+                return {
+                    includeFullText: false,
+                    includeLogo: false,
+                    textContent: "112"
+                };
+            }
+        }
+
+        function createIcon(size, variant) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Brand colors
+            const brandColor = '#b91c1c';
+            const backgroundColor = '#ffffff';
+
+            // Fill background with rounded corners
+            ctx.fillStyle = backgroundColor;
+            ctx.beginPath();
+            const radius = size * 0.1;
+            if (ctx.roundRect) {
+                ctx.roundRect(0, 0, size, size, radius);
+            } else {
+                // Fallback for older browsers
+                ctx.rect(0, 0, size, size);
+            }
+            ctx.fill();
+            ctx.clip();
+
+            // Draw emergency cross symbol
+            const crossSize = size * 0.35;
+            const crossX = (size - crossSize) / 2;
+            const crossY = (size - crossSize) / 2;
+            
+            ctx.fillStyle = brandColor;
+            
+            // Vertical bar
+            ctx.fillRect(
+                crossX + crossSize * 0.4, 
+                crossY, 
+                crossSize * 0.2, 
+                crossSize
+            );
+            
+            // Horizontal bar
+            ctx.fillRect(
+                crossX, 
+                crossY + crossSize * 0.4, 
+                crossSize, 
+                crossSize * 0.2
+            );
+
+            // Add text
+            if (variant.textContent) {
+                const fontSize = variant.includeFullText ? size * 0.12 : size * 0.22;
+                const textY = size * 0.8;
+                
+                ctx.fillStyle = brandColor;
+                ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Add text shadow for better readability
+                ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                ctx.shadowBlur = 1;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+                
+                ctx.fillText(variant.textContent, size / 2, textY);
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+
+            return canvas;
+        }
+
+        function generateIconCategory(category, sizes) {
+            const icons = [];
+            
+            for (const size of sizes) {
+                const variant = getDesignVariant(size);
+                const canvas = createIcon(size, variant);
+                
+                let filename;
+                if (category === 'appleTouchIcon') {
+                    filename = `apple-touch-icon-${size}x${size}.png`;
+                } else if (category === 'favicon') {
+                    filename = `favicon-${size}x${size}.png`;
+                } else if (category === 'maskable') {
+                    filename = `maskable-${size}x${size}.png`;
+                } else {
+                    filename = `icon-${size}x${size}.png`;
+                }
+                
+                icons.push({
+                    canvas: canvas,
+                    filename: filename,
+                    size: size,
+                    dataUrl: canvas.toDataURL('image/png')
+                });
+            }
+            
+            return icons;
+        }
+
+        function autoGenerateIcons() {
+            showStatus('🎨 Icon\'lar oluşturuluyor...', 'info');
+            
+            try {
+                // Generate all categories
+                generatedIcons = {
+                    pwa: generateIconCategory('pwa', iconSizes.pwa),
+                    appleTouchIcon: generateIconCategory('appleTouchIcon', iconSizes.appleTouchIcon),
+                    favicon: generateIconCategory('favicon', iconSizes.favicon),
+                    maskable: generateIconCategory('maskable', iconSizes.maskable)
+                };
+                
+                // Calculate total
+                const totalIcons = Object.values(generatedIcons).reduce((sum, category) => sum + category.length, 0);
+                
+                showStatus(`✅ ${totalIcons} icon başarıyla oluşturuldu!`, 'success');
+                
+                // Show download section
+                displayDownloadLinks();
+                document.getElementById('downloadSection').style.display = 'block';
+                
+            } catch (error) {
+                showStatus(`❌ Hata: ${error.message}`, 'error');
+            }
+        }
+
+        function displayDownloadLinks() {
+            const grid = document.getElementById('downloadGrid');
+            grid.innerHTML = '';
+            
+            const categoryNames = {
+                pwa: '📱 PWA Icons',
+                appleTouchIcon: '🍎 Apple Touch Icons',
+                favicon: '🌐 Favicons',
+                maskable: '🤖 Maskable Icons'
+            };
+            
+            Object.entries(generatedIcons).forEach(([category, icons]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'download-category';
+                
+                const title = document.createElement('h3');
+                title.textContent = categoryNames[category];
+                categoryDiv.appendChild(title);
+                
+                icons.forEach(icon => {
+                    const link = document.createElement('a');
+                    link.href = icon.dataUrl;
+                    link.download = icon.filename;
+                    link.className = 'download-link';
+                    link.textContent = `${icon.size}x${icon.size}`;
+                    categoryDiv.appendChild(link);
+                });
+                
+                grid.appendChild(categoryDiv);
+            });
+        }
+
+        // Add roundRect polyfill for older browsers
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+    </script>
+</body>
+</html>

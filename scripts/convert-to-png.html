@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>JPG to PNG Converter</title>
+</head>
+<body>
+    <h1>🔄 JPG to PNG Converter</h1>
+    <p>Bu tool mevcut logo.jpg'yi PNG formatına çevirir.</p>
+    
+    <canvas id="canvas" style="border: 1px solid #ccc;"></canvas><br><br>
+    
+    <button onclick="convertToPNG()">🎨 PNG'ye Çevir</button>
+    <div id="downloads"></div>
+
+    <script>
+        async function convertToPNG() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            const downloads = document.getElementById('downloads');
+            downloads.innerHTML = '';
+            
+            // Load original logo
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            img.onload = function() {
+                // Apple Touch Icon sizes for iOS
+                const sizes = [180, 152, 120, 76];
+                
+                sizes.forEach(size => {
+                    canvas.width = size;
+                    canvas.height = size;
+                    
+                    // Clear canvas with white background
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, size, size);
+                    
+                    // Draw image
+                    ctx.drawImage(img, 0, 0, size, size);
+                    
+                    // Create download link
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = `apple-touch-icon-${size}x${size}.png`;
+                    link.textContent = `📥 Download ${size}x${size} PNG`;
+                    link.style.display = 'block';
+                    link.style.margin = '5px 0';
+                    link.style.color = '#b91c1c';
+                    
+                    downloads.appendChild(link);
+                });
+                
+                console.log('PNG conversion completed!');
+            };
+            
+            // Try to load from GitHub or local
+            img.src = '../img/logo.jpg';
+        }
+    </script>
+</body>
+</html>

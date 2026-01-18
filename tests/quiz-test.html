@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-result { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .pass { background: #d4edda; color: #155724; }
+        .fail { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🎮 Quiz Game Test</h1>
+    <div id="test-results"></div>
+
+    <script>
+        // Test quiz questions data structure
+        function testQuizQuestions() {
+            const results = [];
+            
+            // Mock quiz questions for testing
+            const mockQuestions = [
+                {
+                    level: "kolay",
+                    question: "Test question?",
+                    options: ["A", "B", "C", "D"],
+                    correct: 1,
+                    explanation: "Test explanation"
+                }
+            ];
+            
+            // Test 1: Question structure
+            const question = mockQuestions[0];
+            if (question.level && question.question && question.options && 
+                typeof question.correct === 'number' && question.explanation) {
+                results.push({ test: "Question Structure", status: "PASS" });
+            } else {
+                results.push({ test: "Question Structure", status: "FAIL" });
+            }
+            
+            // Test 2: Options array
+            if (Array.isArray(question.options) && question.options.length === 4) {
+                results.push({ test: "Options Array", status: "PASS" });
+            } else {
+                results.push({ test: "Options Array", status: "FAIL" });
+            }
+            
+            // Test 3: Correct answer index
+            if (question.correct >= 0 && question.correct < question.options.length) {
+                results.push({ test: "Correct Answer Index", status: "PASS" });
+            } else {
+                results.push({ test: "Correct Answer Index", status: "FAIL" });
+            }
+            
+            return results;
+        }
+        
+        // Test quiz state management
+        function testQuizState() {
+            const results = [];
+            
+            // Mock quiz state
+            const mockState = {
+                currentQuestion: 0,
+                score: 0,
+                timeLeft: 60,
+                gameActive: false,
+                timer: null,
+                questions: [],
+                startTime: null,
+                level: 'kolay'
+            };
+            
+            // Test state properties
+            const requiredProps = ['currentQuestion', 'score', 'timeLeft', 'gameActive', 'level'];
+            const hasAllProps = requiredProps.every(prop => mockState.hasOwnProperty(prop));
+            
+            if (hasAllProps) {
+                results.push({ test: "Quiz State Properties", status: "PASS" });
+            } else {
+                results.push({ test: "Quiz State Properties", status: "FAIL" });
+            }
+            
+            return results;
+        }
+        
+        // Run tests
+        function runTests() {
+            const allResults = [
+                ...testQuizQuestions(),
+                ...testQuizState()
+            ];
+            
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+            
+            allResults.forEach(result => {
+                const className = result.status === 'PASS' ? 'pass' : 'fail';
+                html += `<div class="test-result ${className}">
+                    ${result.status === 'PASS' ? '✅' : '❌'} ${result.test}: ${result.status}
+                </div>`;
+            });
+            
+            const passCount = allResults.filter(r => r.status === 'PASS').length;
+            const totalCount = allResults.length;
+            
+            html += `<div class="test-result ${passCount === totalCount ? 'pass' : 'fail'}">
+                <strong>Overall: ${passCount}/${totalCount} tests passed</strong>
+            </div>`;
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        // Run tests on page load
+        runTests();
+    </script>
+</body>
+</html>

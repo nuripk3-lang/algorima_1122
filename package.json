@@ -1,0 +1,18 @@
+{
+  "name": "kirklareli-112-pwa",
+  "version": "1.0.0",
+  "description": "Kırklareli 112 Acil Sağlık Eğitim Asistanı PWA",
+  "main": "app.js",
+  "scripts": {
+    "generate-icons": "node scripts/generate-icons.js",
+    "test": "jest",
+    "test:icons": "jest tests/icon-tests.js"
+  },
+  "keywords": ["pwa", "medical", "emergency", "112"],
+  "author": "Kırklareli 112",
+  "license": "MIT",
+  "devDependencies": {
+    "sharp": "^0.33.0",
+    "jest": "^29.7.0"
+  }
+}

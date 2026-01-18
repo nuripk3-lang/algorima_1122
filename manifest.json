@@ -1,0 +1,93 @@
+{
+  "name": "Kırklareli 112 Eğitim Asistanı",
+  "short_name": "112 Asistan",
+  "description": "Hastane öncesi acil müdahale algoritmaları — hızlı referans, dozlar ve uyarılar",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#b91c1c",
+  "orientation": "any",
+  "categories": ["medical", "education", "health"],
+  "lang": "tr",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "img/icons/pwa/icon-72x72.jpg",
+      "sizes": "72x72",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-96x96.jpg",
+      "sizes": "96x96",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-128x128.jpg",
+      "sizes": "128x128",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-144x144.jpg",
+      "sizes": "144x144",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-152x152.jpg",
+      "sizes": "152x152",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-192x192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-384x384.jpg",
+      "sizes": "384x384",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/pwa/icon-512x512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "img/icons/maskable/maskable-192x192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    },
+    {
+      "src": "img/icons/maskable/maskable-512x512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Çocuk Doz Hesaplama",
+      "short_name": "Doz",
+      "description": "Çocuk doz hesaplayıcısını aç",
+      "url": "./index.html#doz",
+      "icons": [{ "src": "img/icons/pwa/icon-192x192.jpg", "sizes": "192x192", "type": "image/jpeg" }]
+    },
+    {
+      "name": "CPR Sayacı",
+      "short_name": "CPR",
+      "description": "CPR sayacını aç",
+      "url": "./index.html#cpr",
+      "icons": [{ "src": "img/icons/pwa/icon-192x192.jpg", "sizes": "192x192", "type": "image/jpeg" }]
+    }
+  ]
+}

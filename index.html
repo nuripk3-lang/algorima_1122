@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>112 Müdahale Algoritmaları</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Hastane öncesi acil müdahale algoritmaları — hızlı referans, dozlar ve uyarılar.">
+  <meta name="theme-color" content="#b91c1c">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="112 Asistan">
+  <!-- Favicon (PNG for better compatibility) -->
+  <link rel="icon" type="image/png" sizes="16x16" href="img/logo.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/logo.png">
+  <link rel="icon" type="image/png" sizes="48x48" href="img/logo.png">
+  <link rel="shortcut icon" href="img/logo.png">
+  
+  <!-- Apple Touch Icons (PNG for iOS compatibility) -->
+  <link rel="apple-touch-icon" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="57x57" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="60x60" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="72x72" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="76x76" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="114x114" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="120x120" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="144x144" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="152x152" href="img/logo.png?v=5">
+  <link rel="apple-touch-icon" sizes="180x180" href="img/logo.png?v=5">
+  
+  <!-- Microsoft Tiles -->
+  <meta name="msapplication-TileImage" content="img/icons/pwa/icon-144x144.jpg">
+  <meta name="msapplication-TileColor" content="#b91c1c">
+  <meta name="msapplication-config" content="browserconfig.xml">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css?v=css-fix-v30-bypass">
+  <style>
+    /* Modern Nokta Animasyonu */
+    .loader-dots { display: flex; justify-content: center; gap: 8px; }
+    .loader-dots span { width: 12px; height: 12px; background: #b91c1c; border-radius: 50%; animation: dots 1.4s infinite ease-in-out both; }
+    .loader-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .loader-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes dots {
+        0%, 80%, 100% { transform: scale(0); }
+        40% { transform: scale(1.0); }
+    }
+  </style>
+</head>
+<body>
+<div id="splash-screen" onclick="closeSplashScreen()" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; cursor: pointer;" title="Tıklayarak geç">
+    
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png'); opacity: 0.05;"></div>
+
+    <div style="position: relative; z-index: 10; text-align: center;">
+        <div style="width: 160px; height: 160px; margin: 0 auto 25px auto; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(185, 28, 28, 0.15); border: 2px solid #f8fafc; overflow: hidden;">
+            <img src="img/logo.jpg" 
+                 style="width: 130px; height: auto;" 
+                 alt="T.C. Sağlık Bakanlığı">
+        </div>
+
+        <h1 style="color: #b91c1c; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 900; letter-spacing: 4px; margin: 0; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.05);">KIRKLARELİ 112</h1>
+        <div style="width: 60px; height: 4px; background: #b91c1c; margin: 15px auto; border-radius: 2px;"></div>
+        <p style="color: #64748b; font-family: sans-serif; font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">Acil Sağlık Eğitim Asistanı</p>
+
+        <div style="margin-top: 50px;">
+            <div class="loader-dots">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+    
+    <div style="position: absolute; bottom: 40px; color: #94a3b8; font-size: 11px; font-family: sans-serif; letter-spacing: 1px; font-weight: 600;">
+        T.C. SAĞLIK BAKANLIĞI KURUMSAL REHBERİ
+    </div>
+    
+    <div style="position: absolute; bottom: 20px; color: #94a3b8; font-size: 12px; font-family: sans-serif;">
+        © 2026 Hastane Öncesi Bakım Kılavuzu
+    </div>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+  <h1 style="margin: 0;">🚑 112 Acil Müdahale</h1>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Tema Değiştir" title="Karanlık/Açık Tema">
+    🌙
+  </button>
+</div>
+<p class="info">Vakaya çıkmadan önce hızlı gözden geçirme amaçlıdır.</p>
+
+<label for="searchInput" class="visually-hidden">Algoritma ara</label>
+<input
+  type="text"
+  id="searchInput"
+  placeholder="🔍 Algoritma ara (Nöbet, Travma, Anafilaksi, kalp, çocuk...)"
+  onkeyup="searchAlgo()"
+  oninput="searchAlgo()"
+  aria-label="Algoritma ara"
+/>
+
+<!-- Favoriler Bölümü -->
+<div id="favoritesSection" style="display: none;">
+  <h2 style="margin: 0 0 10px 0; font-size: 1.2rem; color: var(--warning);">⭐ Favorilerim</h2>
+  <div id="favoritesGrid"></div>
+  <p id="noFavorites" style="text-align: center; color: var(--muted); display: none;">Henüz favori eklenmemiş. Algoritmalara ⭐ butonu ile ekleyebilirsiniz.</p>
+</div>
+
+<div class="grid">
+  <button data-key="yetiskin" onclick="showGroup('yetiskin')" aria-controls="yetiskin" aria-pressed="false">🧑 Yetişkin</button>
+  <button data-key="cocuk" onclick="showGroup('cocuk')" aria-controls="cocuk" aria-pressed="false">👶 Çocuk</button>
+  <button data-key="doz" onclick="showChildCalc()" class="menu-btn">💉 Çocuk Hesaplamalar</button>
+  <button data-key="ilaclar" onclick="showGroup('ilaclar')" aria-controls="ilacTabloSection" aria-pressed="false">💊 İlaçlar</button>
+  <button data-key="uygulamalar" onclick="showProcedures()" style="background: #4b5563;">⚙️ Uygulamalar</button>
+  <button data-key="ekg" onclick="showEKGAnalyzer()" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);">📷 EKG Ritim Tanıma</button>
+  <button data-key="quiz" onclick="showQuizGame()" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 8px 20px rgba(245, 158, 11, 0.35);">🎮 Quiz Oyunu</button>
+</div>
+
+<!-- YETİŞKİN -->
+<div id="yetiskin" class="section" style="display:none;">
+  <h2 id="yetiskinTitle">Yetişkin Ön Tanılar</h2>
+  
+  <div id="yetiskinCategoryMenu" class="grid">
+    <button onclick="filterYetiskin('cardiac', '🫀 Kardiyak Aciller')" style="background: #fee2e2; color: #b91c1c; border: 2px solid #ef4444;">🫀 Kardiyak</button>
+    <button onclick="filterYetiskin('respiratory', '🫁 Solunum Aciller')" style="background: #ecfdf5; color: #059669; border: 2px solid #10b981;">🫁 Solunum</button>
+    <button onclick="filterYetiskin('neuro', '🧠 Nörolojik Aciller')" style="background: #eef2ff; color: #4f46e5; border: 2px solid #6366f1;">🧠 Nörolojik</button>
+    <button onclick="filterYetiskin('other', '🚑 Diğer Aciller')" style="background: #fffbeb; color: #d97706; border: 2px solid #f59e0b;">🚑 Diğer</button>
+  </div>
+
+  <div id="yetiskinGrid" class="grid" style="display:none; margin-top: 20px;">
+    <button class="back-btn" style="grid-column: 1 / -1; background: #4b5563; margin-bottom:10px;" onclick="resetYetiskinView()">⬅️ Kategorilere Dön</button>
+    
+    <button data-key="aks" data-category="cardiac" data-tags="kalp,stemi,ekg,aspirin" onclick="showAlgo('aks','Yetişkin')">AKS</button>
+    <button data-key="bradikardi" data-category="cardiac" data-tags="yavas,nabiz,atropin" onclick="showAlgo('bradikardi','Yetişkin')">Bradikardi</button>
+    <button data-key="tasikardi" data-category="cardiac" data-tags="hizli,nabiz,adenozin" onclick="showAlgo('tasikardi','Yetişkin')">Taşikardi</button>
+    <button data-key="arrest" data-category="cardiac" data-tags="kpr,defib,adrenalin" onclick="showAlgo('arrest','Yetişkin')">Arrest</button>
+    <button data-key="kardiyojenik_sok_y" data-category="cardiac" data-tags="kalp,şok,erişkin,yetmezlik,mi" onclick="showAlgo('kardiyojenik_sok_y','Yetişkin')">🫀 Kardiyojenik Şok</button>
+    <button data-key="post_rosc_y" data-category="cardiac" data-tags="kpr,rosc,erişkin,kalp,arrest" onclick="showAlgo('post_rosc_y','Yetişkin')">🏥 Post-ROSC Bakım</button>
+    <button data-key="hipotermi_arrest" data-category="cardiac" data-tags="arrest,soğuk,hipotermi,erişkin" onclick="showAlgo('hipotermi_arrest','Yetişkin')">❄️ Hipotermik Arrest</button>
+
+    <button data-key="astim" data-category="respiratory" data-tags="nefes,bronkospazm,ventolin" onclick="showAlgo('astim','Yetişkin')">Astım</button>
+    <button data-key="koah" data-category="respiratory" data-tags="koah,nefes,hiperkapni" onclick="showAlgo('koah','Yetişkin')">KOAH</button>
+
+    <button data-key="inme" data-category="neuro" data-tags="felç,inme,fast,yüz" onclick="showAlgo('inme','Yetişkin')">İnme (SVH)</button>
+    <button data-key="nobet" data-category="neuro" data-tags="nöbet,konvülziyon,midazolam" onclick="showAlgo('nobet','Yetişkin')">Nöbet</button>
+    <button data-key="kafa" data-category="neuro" data-tags="kafa,gks,entübasyon" onclick="showAlgo('kafa','Yetişkin')">Kafa Travması</button>
+    <button data-key="vertigo" data-category="neuro" data-tags="başdönmesi,bulantı" onclick="showAlgo('vertigo','Yetişkin')">Vertigo</button>
+
+    <button data-key="gebe_hipertansiyon" data-category="other" data-tags="gebe,eklampsi,tansiyon" onclick="showAlgo('gebe_hipertansiyon','Yetişkin')">🤰 Gebe HT / Eklampsi</button>
+    <button data-key="dogum" data-category="other" data-tags="gebe,bebek,plasenta,kanama" onclick="showAlgo('dogum','Yetişkin')">Acil Doğum</button>
+    <button data-key="hipoglisemi" data-category="other" data-tags="şeker,diyabet,komo,kan şekeri" onclick="showAlgo('hipoglisemi','Yetişkin')">Hipoglisemi</button>
+    <button data-key="hipovolemi" data-category="other" data-tags="şok,sıvı,kanama" onclick="showAlgo('hipovolemi','Yetişkin')">Hipovolemik Şok</button>
+    <button data-key="yanik" data-category="other" data-tags="yanık,parkland,alan" onclick="showAlgo('yanik','Yetişkin')">Yanık</button>
+    <button data-key="zehir" data-category="other" data-tags="zehir,toksikoloji,antidot" onclick="showAlgo('zehir','Yetişkin')">Zehirlenme</button>
+    <button data-key="anafilaksi" data-category="other" data-tags="alerji,şok,epinefrin" onclick="showAlgo('anafilaksi','Yetişkin')">Anafilaksi</button>
+    <button data-key="travma" data-category="other" data-tags="travma,immobilizasyon,kanama" onclick="showAlgo('travma','Yetişkin')">Travmalı Hasta</button>
+    <button data-key="crush" data-category="other" data-tags="crush,myoglobin,hiperkalemi" onclick="showAlgo('crush','Yetişkin')">Crush Sendromu</button>
+</div>
+</div>
+
+<div id="cocuk" class="section" style="display:none;">
+    <h2 id="cocukTitle">Çocuk Ön Tanılar</h2>
+    
+    <div id="cocukCategoryMenu" class="grid">
+        <button onclick="filterCocuk('cardiac', '🫀 Çocuk Kardiyak')" style="background: #fee2e2; color: #b91c1c; border: 2px solid #ef4444;">🫀 Kardiyak</button>
+        <button onclick="filterCocuk('respiratory', '🫁 Çocuk Solunum')" style="background: #ecfdf5; color: #059669; border: 2px solid #10b981;">🫁 Solunum</button>
+        <button onclick="filterCocuk('neuro', '🧠 Çocuk Nöroloji')" style="background: #eef2ff; color: #4f46e5; border: 2px solid #6366f1;">🧠 Nörolojik</button>
+        <button onclick="filterCocuk('other', '🚑 Çocuk Diğer')" style="background: #fffbeb; color: #d97706; border: 2px solid #f59e0b;">🚑 Diğer</button>
+    </div>
+
+    <div id="cocukGrid" class="grid" style="display:none; margin-top: 20px;">
+        <button class="back-btn" style="grid-column: 1 / -1; background: #4b5563; margin-bottom:10px;" onclick="resetCocukView()">⬅️ Kategorilere Dön</button>
+        
+        <button data-key="arrest" data-category="cardiac" data-tags="kpr,çocuk,defib" onclick="showAlgo('arrest','Çocuk')">Arrest</button>
+        <button data-key="bradikardi" data-category="cardiac" data-tags="yavas,çocuk,atropin" onclick="showAlgo('bradikardi','Çocuk')">Bradikardi</button>
+        <button data-key="tasikardi" data-category="cardiac" data-tags="hızlı,çocuk,adenozin" onclick="showAlgo('tasikardi','Çocuk')">Taşikardi</button>
+        <button data-key="kardiyojenik_sok" data-category="cardiac" data-tags="kalp,şok,çocuk" onclick="showAlgo('kardiyojenik_sok','Çocuk')">🫀 Kardiyojenik Şok</button>
+        <button data-key="post_rosc_cocuk" data-category="cardiac" onclick="showAlgo('post_rosc_cocuk','Çocuk')">🔄 Post-ROSC Bakım</button>
+        <button data-key="nrp" data-category="cardiac" data-tags="yenidoğan,bebek,nrp" onclick="showAlgo('nrp','Çocuk')">NRP (Yenidoğan)</button>
+
+        <button data-key="astim" data-category="respiratory" data-tags="nefes,çocuk,ventolin" onclick="showAlgo('astim','Çocuk')">Astım</button>
+        <button data-key="krup" data-category="respiratory" data-tags="stridor,çocuk" onclick="showAlgo('krup','Çocuk')">Krup</button>
+        <button data-key="epiglotit_cocuk" data-category="respiratory" onclick="showAlgo('epiglotit_cocuk','Çocuk')">Epiglotit</button>
+
+        <button data-key="nobet" data-category="neuro" data-tags="nöbet,çocuk" onclick="showAlgo('nobet','Çocuk')">Nöbet</button>
+        <button data-key="kafa" data-category="neuro" data-tags="kafa,çocuk" onclick="showAlgo('kafa','Çocuk')">Kafa Travması</button>
+        <button data-key="vertigo" data-category="neuro" onclick="showAlgo('vertigo','Çocuk')">Vertigo</button>
+
+        <button data-key="ates_cocuk" data-category="other" onclick="showAlgo('ates_cocuk','Çocuk')">Yüksek Ateş</button>
+        <button data-key="septik_sok_cocuk" data-category="other" onclick="showAlgo('septik_sok_cocuk','Çocuk')">🦠 Çocuk Septik Şok</button>
+        <button data-key="p_hipoglisemi" data-category="other" onclick="showAlgo('p_hipoglisemi','Çocuk')">Hipoglisemi</button>
+        <button data-key="anafilaksi" data-category="other" data-tags="alerji,çocuk" onclick="showAlgo('anafilaksi','Çocuk')">Anafilaksi</button>
+        <button data-key="travma" data-category="other" onclick="showAlgo('travma','Çocuk')">Travmalı Hasta</button>
+        <button data-key="yanik" data-category="other" onclick="showAlgo('yanik','Çocuk')">Yanık</button>
+        <button data-key="zehir" data-category="other" onclick="showAlgo('zehir','Çocuk')">Zehirlenme</button>
+        <button data-key="crush" data-category="other" onclick="showAlgo('crush','Çocuk')">Crush Sendromu</button>
+    </div>
+</div>
+
+  <!-- ÇOCUK DOZ -->
+  </div> <div id="cocukDozSection" class="section" style="display:none;">
+  <div style="background:#fff; padding:20px; border-radius:20px; box-shadow:var(--card-shadow);">
+    <h2 style="text-align:center;">👶 Çocuk Doz Hesaplama</h2>
+    <p class="info">Çocuğun kilosunu girerek kritik ilaç dozlarını anlık hesaplayın.</p>
+    <label for="kiloInput" class="visually-hidden">Kilo</label>
+    <div style="margin-bottom:15px; background:#f8fafc; padding:15px; border-radius:12px; border:1px solid #e2e8f0;">
+  <label style="display:block; font-weight:bold; margin-bottom:8px; font-size:14px;">📏 Yaşa Göre Kilo Tahmin Et (Opsiyonel)</label>
+  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+    <select id="yasTipi" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+      <option value="ay">Ay (0-12)</option>
+      <option value="yil" selected>Yaş (1-15)</option>
+    </select>
+    <input type="number" id="yasDeger" placeholder="Değer gir..." oninput="tahminiKiloHesapla()" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1;">
+  </div>
+</div>
+
+<label style="display:block; font-weight:bold; margin-bottom:8px; font-size:14px;">⚖️ Kesin Kilo (kg)</label>
+<input type="number" id="kiloInput" placeholder="Kilo (kg) giriniz..." oninput="hesaplaCocukDoz()" aria-label="Kilo (kg)" style="width:100%; padding:14px; border-radius:12px; border:1px solid #ddd; font-size:18px; background:#fff7ed;">
+    <div id="dozSonuc" aria-live="polite" style="margin-top:20px;"></div>
+  </div>
+</div>
+
+<div id="content" aria-live="polite" style="display:none;"></div>
+
+<!-- CPR -->
+<div id="ilacTabloSection" class="section" style="display:none;">
+    <div style="background:#fff; padding:15px; border-radius:20px; box-shadow:var(--card-shadow); overflow-x: auto; margin-bottom: 20px;">
+      <h2 style="text-align:center;">💉 Acil İlaç Hazırlama</h2>
+      <table style="width:100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+        <thead>
+          <tr style="background: var(--primary-1); color: white;">
+            <th style="padding: 10px; border: 1px solid #ddd;">İlaç Adı</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Form / Doz</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Hazırlanış / Notlar</th>
+          </tr>
+        </thead>
+        <tbody id="ilacTabloGövde">
+          </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="cprBox">
+  <h2>🫀 CPR Sayacı</h2>
+  <div id="cprTimer" role="timer" aria-live="polite">02:00</div>
+  <div class="cpr-controls">
+    <button onclick="startCPR()">▶️ Başlat</button>
+    <button onclick="stopCPR()">⏹ Durdur</button>
+    <button onclick="resetCPR()">🔁 Sıfırla</button>
+  </div>
+  <p id="cprAlert" aria-live="assertive"></p>
+
+</div>
+
+<script src="app.js?v=koah-removed-v34" defer></script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kırklareli 112 Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #b91c1c;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        button {
+            background: #b91c1c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #991b1b;
+        }
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .preview-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .preview-item canvas {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+        .preview-item span {
+            font-size: 12px;
+            color: #666;
+        }
+        .download-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚑 Kırklareli 112 Icon Generator</h1>
+        
+        <div class="controls">
+            <button onclick="generateAllIcons()">🎨 Generate All Icons</button>
+            <button onclick="downloadAllIcons()">📥 Download All Icons</button>
+            <button onclick="clearPreviews()">🗑️ Clear Previews</button>
+        </div>
+        
+        <div id="status"></div>
+        
+        <div class="preview-grid" id="previewGrid"></div>
+        
+        <div class="download-section" id="downloadSection" style="display: none;">
+            <h3>Generated Icons:</h3>
+            <div id="downloadLinks"></div>
+        </div>
+    </div>
+
+    <script>
+        // Icon size configurations
+        const iconSizes = {
+            pwa: [72, 96, 128, 144, 152, 192, 384, 512],
+            appleTouchIcon: [57, 60, 72, 76, 114, 120, 144, 152, 180],
+            favicon: [16, 32, 48],
+            maskable: [192, 512]
+        };
+
+        let generatedIcons = [];
+
+        // Design variants based on size
+        function getDesignVariant(size) {
+            if (size >= 192) {
+                return {
+                    includeFullText: true,
+                    includeLogo: true,
+                    includeSymbol: true,
+                    textContent: "KIRKLARELİ 112"
+                };
+            } else if (size >= 96) {
+                return {
+                    includeFullText: false,
+                    includeLogo: true,
+                    includeSymbol: true,
+                    textContent: "112"
+                };
+            } else if (size >= 32) {
+                return {
+                    includeFullText: false,
+                    includeLogo: true,
+                    includeSymbol: false,
+                    textContent: "112"
+                };
+            } else {
+                return {
+                    includeFullText: false,
+                    includeLogo: false,
+                    includeSymbol: true,
+                    textContent: "112"
+                };
+            }
+        }
+
+        // Load the original logo
+        let originalLogo = null;
+        
+        function loadOriginalLogo() {
+            return new Promise((resolve, reject) => {
+                if (originalLogo) {
+                    resolve(originalLogo);
+                    return;
+                }
+                
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    originalLogo = img;
+                    resolve(img);
+                };
+                img.onerror = reject;
+                img.src = '../img/logo.jpg';
+            });
+        }
+
+        // Create icon on canvas
+        async function createIcon(size, variant) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Brand colors
+            const brandColor = '#b91c1c';
+            const backgroundColor = '#ffffff';
+
+            // Fill background with rounded corners
+            ctx.fillStyle = backgroundColor;
+            ctx.beginPath();
+            const radius = size * 0.1;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+            ctx.clip();
+
+            // Try to load and use original logo for larger icons
+            if (size >= 96 && variant.includeLogo) {
+                try {
+                    const logo = await loadOriginalLogo();
+                    const logoSize = size * 0.4;
+                    const logoX = (size - logoSize) / 2;
+                    const logoY = size * 0.15;
+                    
+                    ctx.drawImage(logo, logoX, logoY, logoSize, logoSize);
+                } catch (error) {
+                    console.warn('Could not load original logo, using fallback design');
+                    // Fallback: Draw emergency cross symbol
+                    drawEmergencyCross(ctx, size, brandColor);
+                }
+            } else {
+                // For small icons or when logo not included, draw emergency cross
+                drawEmergencyCross(ctx, size, brandColor);
+            }
+
+            // Add text
+            if (variant.textContent) {
+                const fontSize = variant.includeFullText ? size * 0.12 : size * 0.25;
+                const textY = variant.includeLogo && size >= 96 ? size * 0.8 : size * 0.7;
+                
+                ctx.fillStyle = brandColor;
+                ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Add text shadow for better readability
+                ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                ctx.shadowBlur = 2;
+                ctx.shadowOffsetX = 1;
+                ctx.shadowOffsetY = 1;
+                
+                ctx.fillText(variant.textContent, size / 2, textY);
+                
+                // Reset shadow
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+            }
+
+            return canvas;
+        }
+
+        // Helper function to draw emergency cross
+        function drawEmergencyCross(ctx, size, color) {
+            const crossSize = size * 0.3;
+            const crossX = (size - crossSize) / 2;
+            const crossY = (size - crossSize) / 2;
+            
+            ctx.fillStyle = color;
+            
+            // Vertical bar
+            ctx.fillRect(
+                crossX + crossSize * 0.4, 
+                crossY, 
+                crossSize * 0.2, 
+                crossSize
+            );
+            
+            // Horizontal bar
+            ctx.fillRect(
+                crossX, 
+                crossY + crossSize * 0.4, 
+                crossSize, 
+                crossSize * 0.2
+            );
+        }
+
+        // Generate icons for a specific category
+        async function generateIconCategory(category, sizes) {
+            const icons = [];
+            
+            for (const size of sizes) {
+                const variant = getDesignVariant(size);
+                const canvas = await createIcon(size, variant);
+                
+                let filename;
+                if (category === 'appleTouchIcon') {
+                    filename = `apple-touch-icon-${size}x${size}.png`;
+                } else if (category === 'favicon') {
+                    filename = `favicon-${size}x${size}.png`;
+                } else if (category === 'maskable') {
+                    filename = `maskable-${size}x${size}.png`;
+                } else {
+                    filename = `icon-${size}x${size}.png`;
+                }
+                
+                icons.push({
+                    canvas: canvas,
+                    filename: filename,
+                    size: size,
+                    category: category
+                });
+            }
+            
+            return icons;
+        }
+
+        // Generate all icons
+        async function generateAllIcons() {
+            showStatus('🎨 Generating icons...', 'info');
+            
+            try {
+                generatedIcons = [];
+                
+                // Generate all categories
+                const pwaIcons = await generateIconCategory('pwa', iconSizes.pwa);
+                const appleIcons = await generateIconCategory('appleTouchIcon', iconSizes.appleTouchIcon);
+                const faviconIcons = await generateIconCategory('favicon', iconSizes.favicon);
+                const maskableIcons = await generateIconCategory('maskable', iconSizes.maskable);
+                
+                generatedIcons.push(...pwaIcons, ...appleIcons, ...faviconIcons, ...maskableIcons);
+                
+                // Display previews
+                displayPreviews();
+                
+                showStatus(`✅ Successfully generated ${generatedIcons.length} icons!`, 'success');
+                document.getElementById('downloadSection').style.display = 'block';
+                
+            } catch (error) {
+                showStatus(`❌ Error generating icons: ${error.message}`, 'error');
+            }
+        }
+
+        // Display icon previews
+        function displayPreviews() {
+            const grid = document.getElementById('previewGrid');
+            grid.innerHTML = '';
+            
+            generatedIcons.forEach(icon => {
+                const item = document.createElement('div');
+                item.className = 'preview-item';
+                
+                const previewCanvas = document.createElement('canvas');
+                const previewSize = Math.min(icon.size, 64);
+                previewCanvas.width = previewSize;
+                previewCanvas.height = previewSize;
+                
+                const previewCtx = previewCanvas.getContext('2d');
+                previewCtx.drawImage(icon.canvas, 0, 0, previewSize, previewSize);
+                
+                const label = document.createElement('span');
+                label.textContent = `${icon.size}x${icon.size}`;
+                
+                item.appendChild(previewCanvas);
+                item.appendChild(document.createElement('br'));
+                item.appendChild(label);
+                
+                grid.appendChild(item);
+            });
+        }
+
+        // Download all icons as ZIP (simplified - individual downloads)
+        function downloadAllIcons() {
+            if (generatedIcons.length === 0) {
+                showStatus('❌ No icons generated yet. Please generate icons first.', 'error');
+                return;
+            }
+            
+            showStatus('📥 Preparing downloads...', 'info');
+            
+            const downloadLinks = document.getElementById('downloadLinks');
+            downloadLinks.innerHTML = '';
+            
+            generatedIcons.forEach(icon => {
+                const link = document.createElement('a');
+                link.href = icon.canvas.toDataURL('image/png');
+                link.download = icon.filename;
+                link.textContent = icon.filename;
+                link.style.display = 'block';
+                link.style.margin = '5px 0';
+                link.style.color = '#b91c1c';
+                
+                downloadLinks.appendChild(link);
+            });
+            
+            showStatus('✅ Download links ready! Click individual files to download.', 'success');
+        }
+
+        // Clear previews
+        function clearPreviews() {
+            document.getElementById('previewGrid').innerHTML = '';
+            document.getElementById('downloadSection').style.display = 'none';
+            generatedIcons = [];
+            showStatus('🗑️ Previews cleared.', 'info');
+        }
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type}`;
+            
+            if (type === 'info') {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = '';
+                }, 3000);
+            }
+        }
+
+        // Add roundRect polyfill for older browsers
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+    </script>
+</body>
+</html>
